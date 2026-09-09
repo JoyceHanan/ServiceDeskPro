@@ -10,10 +10,7 @@ import ticketRoutes from "./api/tickets.js";
 dotenv.config();
 const app = express()
 app.use(
-    cors({
-        origin: process.env.CLIENT_URL || "http://localhost:5173",
-        credentials: true
-    })
+    cors({ origin: "http://localhost:5173", credentials: true })
 );
 
 app.use(express.json());
@@ -37,10 +34,6 @@ app.use((req, res) => {
     });
 });
 
-// ==========================================
-// ERROR HANDLER
-// ==========================================
-
 app.use((err, req, res, next) => {
     console.error("Error:", err);
 
@@ -49,10 +42,6 @@ app.use((err, req, res, next) => {
         message: err.message || "Internal server error"
     });
 });
-
-// ==========================================
-// SERVER + DATABASE
-// ==========================================
 
 const PORT = process.env.PORT || 5000;
 
