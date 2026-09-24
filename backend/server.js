@@ -23,7 +23,7 @@ dotenv.config();
 
 const app = express();
 
-const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+const clientUrl = process.env.CLIENT_URL || "https://frontend-chi-snowy-68.vercel.app/";
 
 app.use(
     cors({
