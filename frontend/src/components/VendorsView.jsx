@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Store, Plus, Edit } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function VendorsView() {
     const { user, showToast } = useAuth();
@@ -14,7 +15,7 @@ export default function VendorsView() {
     const fetchVendors = async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/vendors");
+            const res = await apiFetch("/api/vendors");
             const data = await res.json();
             if (data.success) setVendors(data.vendors || []);
         } catch (err) {
@@ -31,7 +32,7 @@ export default function VendorsView() {
         try {
             const url = editingVendor ? `/api/vendors/${editingVendor._id}` : "/api/vendors";
             const method = editingVendor ? "PUT" : "POST";
-            const res = await fetch(url, {
+            const res = await apiFetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)

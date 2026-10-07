@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { apiFetch, setStoredToken } from "../utils/api";
 
 const AuthContext = createContext(null);
 
@@ -16,9 +17,11 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuth = async () => {
         try {
-            const res = await fetch("/api/auth/me", {
-                headers: { "Content-Type": "application/json" }
-            });
+            const res = await apiFetch("/api/auth/me");
+            if (!res.ok) {
+                setUser(null);
+                return;
+            }
             const data = await res.json();
             if (data.success && data.user) {
                 setUser(data.user);
@@ -39,14 +42,16 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const res = await fetch("/api/auth/login", {
+            const res = await apiFetch("/api/auth/login", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
             });
             const data = await res.json();
             if (!res.ok || !data.success) {
                 throw new Error(data.message || "Login failed");
+            }
+            if (data.token) {
+                setStoredToken(data.token);
             }
             setUser(data.user);
             showToast(`Welcome back, ${data.user.name}!`, "success");
@@ -59,14 +64,16 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (userData) => {
         try {
-            const res = await fetch("/api/auth/register", {
+            const res = await apiFetch("/api/auth/register", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(userData)
             });
             const data = await res.json();
             if (!res.ok || !data.success) {
                 throw new Error(data.message || "Registration failed");
+            }
+            if (data.token) {
+                setStoredToken(data.token);
             }
             setUser(data.user);
             showToast("Account registered successfully!", "success");
@@ -79,14 +86,15 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await fetch("/api/auth/logout", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" }
+            await apiFetch("/api/auth/logout", {
+                method: "POST"
             });
-            setUser(null);
-            showToast("Logged out successfully", "info");
         } catch (err) {
             console.error("Logout failed:", err);
+        } finally {
+            setStoredToken(null);
+            setUser(null);
+            showToast("Logged out successfully", "info");
         }
     };
 

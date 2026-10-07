@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Plus, Search, HardDrive, User, Building2, Wrench, Trash2, Edit } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function AssetsView() {
     const { user, showToast } = useAuth();
@@ -33,7 +34,7 @@ export default function AssetsView() {
             if (statusFilter) params.append("status", statusFilter);
             if (search) params.append("search", search);
 
-            const res = await fetch(`/api/assets?${params.toString()}`);
+            const res = await apiFetch(`/api/assets?${params.toString()}`);
             const data = await res.json();
             if (data.success) {
                 setAssets(data.assets || []);
@@ -49,8 +50,8 @@ export default function AssetsView() {
         fetchAssets();
         // Fetch reference lists for assignment
         Promise.all([
-            fetch("/api/users").then(r => r.json()),
-            fetch("/api/departments").then(r => r.json())
+            apiFetch("/api/users").then(r => r.json()),
+            apiFetch("/api/departments").then(r => r.json())
         ]).then(([uData, dData]) => {
             if (uData.success) setUsersList(uData.users || []);
             if (dData.success) setDepartmentsList(dData.departments || []);
@@ -63,7 +64,7 @@ export default function AssetsView() {
             const url = editingAsset ? `/api/assets/${editingAsset._id}` : "/api/assets";
             const method = editingAsset ? "PUT" : "POST";
 
-            const res = await fetch(url, {
+            const res = await apiFetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
@@ -85,7 +86,7 @@ export default function AssetsView() {
     const handleDeleteAsset = async (id) => {
         if (!window.confirm("Are you sure you want to delete this asset?")) return;
         try {
-            const res = await fetch(`/api/assets/${id}`, { method: "DELETE" });
+            const res = await apiFetch(`/api/assets/${id}`, { method: "DELETE" });
             const data = await res.json();
             if (data.success) {
                 showToast("Asset deleted", "info");

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Building2, Plus, Edit, User, Trash2 } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function DepartmentsView() {
     const { user, showToast } = useAuth();
@@ -15,7 +16,7 @@ export default function DepartmentsView() {
     const fetchDepartments = async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/departments");
+            const res = await apiFetch("/api/departments");
             const data = await res.json();
             if (data.success) {
                 setDepartments(data.departments || []);
@@ -29,7 +30,7 @@ export default function DepartmentsView() {
 
     useEffect(() => {
         fetchDepartments();
-        fetch("/api/users")
+        apiFetch("/api/users")
             .then(r => r.json())
             .then(d => { if (d.success) setManagers(d.users || []); })
             .catch(() => {});
@@ -41,7 +42,7 @@ export default function DepartmentsView() {
             const url = editingDept ? `/api/departments/${editingDept._id}` : "/api/departments";
             const method = editingDept ? "PUT" : "POST";
 
-            const res = await fetch(url, {
+            const res = await apiFetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)

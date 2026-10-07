@@ -57,7 +57,7 @@ router.post("/register", async (req, res, next) => {
             phone: phone || ""
         });
 
-        sendTokenCookie(res, newUser._id);
+        const token = sendTokenCookie(res, newUser._id);
 
         // Record audit
         await AuditLog.create({
@@ -74,6 +74,7 @@ router.post("/register", async (req, res, next) => {
         res.status(201).json({
             success: true,
             message: "User registered successfully",
+            token,
             user: safeUser
         });
     } catch (error) {
@@ -116,7 +117,7 @@ router.post("/login", async (req, res, next) => {
             });
         }
 
-        sendTokenCookie(res, user._id);
+        const token = sendTokenCookie(res, user._id);
 
         // Record audit
         await AuditLog.create({
@@ -133,6 +134,7 @@ router.post("/login", async (req, res, next) => {
         res.json({
             success: true,
             message: "Logged in successfully",
+            token,
             user: safeUser
         });
     } catch (error) {

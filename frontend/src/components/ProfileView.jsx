@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { User, Mail, Shield, Phone, Building2, Save } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function ProfileView() {
     const { user, showToast, checkAuth } = useAuth();
@@ -12,7 +13,7 @@ export default function ProfileView() {
         e.preventDefault();
         setSaving(true);
         try {
-            const res = await fetch(`/api/users/${user._id}`, {
+            const res = await apiFetch(`/api/users/${user._id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, phone })

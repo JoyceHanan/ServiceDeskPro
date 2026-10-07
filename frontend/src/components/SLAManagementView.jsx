@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { priorityColors } from "../style/common";
 import { Clock, Plus, RefreshCw, AlertTriangle, Edit } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function SLAManagementView() {
     const { user, showToast } = useAuth();
@@ -22,7 +23,7 @@ export default function SLAManagementView() {
     const fetchSLAs = async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/sla");
+            const res = await apiFetch("/api/sla");
             const data = await res.json();
             if (data.success) {
                 setSlas(data.slas || []);
@@ -44,7 +45,7 @@ export default function SLAManagementView() {
             const url = editingSla ? `/api/sla/${editingSla._id}` : "/api/sla";
             const method = editingSla ? "PUT" : "POST";
 
-            const res = await fetch(url, {
+            const res = await apiFetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
@@ -62,7 +63,7 @@ export default function SLAManagementView() {
 
     const triggerSLACheck = async () => {
         try {
-            const res = await fetch("/api/sla/evaluate-breaches", { method: "POST" });
+            const res = await apiFetch("/api/sla/evaluate-breaches", { method: "POST" });
             const data = await res.json();
             if (data.success) {
                 showToast(data.message, "success");

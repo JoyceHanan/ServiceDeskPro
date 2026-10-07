@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { statusColors, priorityColors } from "../style/common";
+import { apiFetch } from "../utils/api";
 import { 
     Ticket, 
     CheckCircle2, 
@@ -34,8 +35,8 @@ export default function DashboardView({ setActiveTab, onSelectTicket, onOpenCrea
             setLoading(true);
             try {
                 const [ticketsRes, assetsRes] = await Promise.all([
-                    fetch("/api/tickets").then(r => r.json()),
-                    fetch("/api/assets").then(r => r.json())
+                    apiFetch("/api/tickets").then(r => r.json()),
+                    apiFetch("/api/assets").then(r => r.json())
                 ]);
 
                 let usersCount = 0;
@@ -45,9 +46,9 @@ export default function DashboardView({ setActiveTab, onSelectTicket, onOpenCrea
 
                 if (["System Admin", "IT Manager"].includes(role)) {
                     const [uRes, dRes, aRes] = await Promise.all([
-                        fetch("/api/users").then(r => r.json()),
-                        fetch("/api/departments").then(r => r.json()),
-                        fetch("/api/audit?limit=5").then(r => r.json())
+                        apiFetch("/api/users").then(r => r.json()),
+                        apiFetch("/api/departments").then(r => r.json()),
+                        apiFetch("/api/audit?limit=5").then(r => r.json())
                     ]);
                     usersCount = uRes.count || 0;
                     departmentsCount = dRes.count || 0;

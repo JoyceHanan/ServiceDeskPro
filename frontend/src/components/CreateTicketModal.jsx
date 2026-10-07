@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { X, Sparkles, AlertCircle } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function CreateTicketModal({ onClose, onSuccess }) {
     const { showToast } = useAuth();
@@ -20,8 +21,8 @@ export default function CreateTicketModal({ onClose, onSuccess }) {
     useEffect(() => {
         // Fetch categories & departments
         Promise.all([
-            fetch("/api/categories").then(r => r.json()),
-            fetch("/api/departments").then(r => r.json())
+            apiFetch("/api/categories").then(r => r.json()),
+            apiFetch("/api/departments").then(r => r.json())
         ]).then(([catData, deptData]) => {
             if (catData.success) setCategories(catData.categories || []);
             if (deptData.success) setDepartments(deptData.departments || []);
@@ -40,7 +41,7 @@ export default function CreateTicketModal({ onClose, onSuccess }) {
 
         setAiLoading(true);
         try {
-            const res = await fetch("/api/tickets/ai-classify", {
+            const res = await apiFetch("/api/tickets/ai-classify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ title: formData.title, description: formData.description })
@@ -67,7 +68,7 @@ export default function CreateTicketModal({ onClose, onSuccess }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("/api/tickets", {
+            const res = await apiFetch("/api/tickets", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)

@@ -22,12 +22,25 @@ import organizationRoutes from "./api/organizations.js";
 dotenv.config();
 
 const app = express();
+app.set("trust proxy", 1);
 
-const clientUrl = process.env.CLIENT_URL || "https://frontend-chi-snowy-68.vercel.app/";
+const rawClientUrl = process.env.CLIENT_URL || "https://frontend-chi-snowy-68.vercel.app";
+const clientUrl = rawClientUrl.replace(/\/$/, "");
+
+const allowedOrigins = [
+    clientUrl,
+    "https://frontend-chi-snowy-68.vercel.app"
+];
 
 app.use(
     cors({
-        origin: clientUrl,
+        origin: (origin, callback) => {
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app") || origin.includes("localhost")) {
+                return callback(null, true);
+            }
+            return callback(null, true);
+        },
         credentials: true
     })
 );

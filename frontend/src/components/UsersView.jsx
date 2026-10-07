@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Plus, Search, User, Shield, Phone, Building2, UserX, Edit } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function UsersView() {
     const { user, showToast } = useAuth();
@@ -29,7 +30,7 @@ export default function UsersView() {
             if (roleFilter) params.append("role", roleFilter);
             if (search) params.append("search", search);
 
-            const res = await fetch(`/api/users?${params.toString()}`);
+            const res = await apiFetch(`/api/users?${params.toString()}`);
             const data = await res.json();
             if (data.success) {
                 setUsers(data.users || []);
@@ -43,7 +44,7 @@ export default function UsersView() {
 
     useEffect(() => {
         fetchUsers();
-        fetch("/api/departments")
+        apiFetch("/api/departments")
             .then(r => r.json())
             .then(d => { if (d.success) setDepartments(d.departments || []); })
             .catch(() => {});
@@ -55,7 +56,7 @@ export default function UsersView() {
             const url = editingUser ? `/api/users/${editingUser._id}` : "/api/users";
             const method = editingUser ? "PUT" : "POST";
 
-            const res = await fetch(url, {
+            const res = await apiFetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
@@ -77,7 +78,7 @@ export default function UsersView() {
     const handleDeactivateUser = async (id) => {
         if (!window.confirm("Are you sure you want to deactivate this account?")) return;
         try {
-            const res = await fetch(`/api/users/${id}`, { method: "DELETE" });
+            const res = await apiFetch(`/api/users/${id}`, { method: "DELETE" });
             const data = await res.json();
             if (data.success) {
                 showToast("User deactivated", "info");

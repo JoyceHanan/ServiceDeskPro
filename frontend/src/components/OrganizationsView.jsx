@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Globe, Plus, Edit } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function OrganizationsView() {
     const { user, showToast } = useAuth();
@@ -14,7 +15,7 @@ export default function OrganizationsView() {
     const fetchOrgs = async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/organizations");
+            const res = await apiFetch("/api/organizations");
             const data = await res.json();
             if (data.success) setOrganizations(data.organizations || []);
         } catch (err) {
@@ -31,7 +32,7 @@ export default function OrganizationsView() {
         try {
             const url = editingOrg ? `/api/organizations/${editingOrg._id}` : "/api/organizations";
             const method = editingOrg ? "PUT" : "POST";
-            const res = await fetch(url, {
+            const res = await apiFetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)

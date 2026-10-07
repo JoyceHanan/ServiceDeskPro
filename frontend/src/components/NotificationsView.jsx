@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Bell, CheckCircle2 } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function NotificationsView() {
     const { showToast } = useAuth();
@@ -10,7 +11,7 @@ export default function NotificationsView() {
     const fetchNotifications = async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/notifications");
+            const res = await apiFetch("/api/notifications");
             const data = await res.json();
             if (data.success) {
                 setNotifications(data.notifications || []);
@@ -28,7 +29,7 @@ export default function NotificationsView() {
 
     const markAllRead = async () => {
         try {
-            await fetch("/api/notifications/read-all", { method: "PATCH" });
+            await apiFetch("/api/notifications/read-all", { method: "PATCH" });
             showToast("All notifications marked as read", "success");
             fetchNotifications();
         } catch (err) {

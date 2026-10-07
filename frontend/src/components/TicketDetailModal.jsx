@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { statusColors, priorityColors } from "../style/common";
+import { apiFetch } from "../utils/api";
 import { 
     X, 
     Clock, 
@@ -34,7 +35,7 @@ export default function TicketDetailModal({ ticketId, onClose, onRefresh }) {
     const fetchTicketDetails = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/tickets/${ticketId}`);
+            const res = await apiFetch(`/api/tickets/${ticketId}`);
             const data = await res.json();
             if (data.success && data.ticket) {
                 setTicket(data.ticket);
@@ -48,7 +49,7 @@ export default function TicketDetailModal({ ticketId, onClose, onRefresh }) {
 
     const fetchWorkLogs = async () => {
         try {
-            const res = await fetch(`/api/worklogs/ticket/${ticketId}`);
+            const res = await apiFetch(`/api/worklogs/ticket/${ticketId}`);
             const data = await res.json();
             if (data.success) {
                 setWorkLogs(data.worklogs || []);
@@ -58,7 +59,7 @@ export default function TicketDetailModal({ ticketId, onClose, onRefresh }) {
 
     const fetchTechnicians = async () => {
         try {
-            const res = await fetch("/api/users?role=staff");
+            const res = await apiFetch("/api/users?role=staff");
             const data = await res.json();
             if (data.success && data.users) {
                 let list = data.users;
@@ -75,7 +76,7 @@ export default function TicketDetailModal({ ticketId, onClose, onRefresh }) {
     const fetchAISuggestions = async () => {
         if (!ticket) return;
         try {
-            const res = await fetch("/api/knowledge/ai-suggest", {
+            const res = await apiFetch("/api/knowledge/ai-suggest", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ title: ticket.title, ticketText: ticket.description })
@@ -105,7 +106,7 @@ export default function TicketDetailModal({ ticketId, onClose, onRefresh }) {
         e.preventDefault();
         if (!commentText.trim()) return;
         try {
-            const res = await fetch(`/api/tickets/${ticketId}/comments`, {
+            const res = await apiFetch(`/api/tickets/${ticketId}/comments`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: commentText })
@@ -125,7 +126,7 @@ export default function TicketDetailModal({ ticketId, onClose, onRefresh }) {
         e.preventDefault();
         if (!internalNoteText.trim()) return;
         try {
-            const res = await fetch(`/api/tickets/${ticketId}/internal-notes`, {
+            const res = await apiFetch(`/api/tickets/${ticketId}/internal-notes`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: internalNoteText })
@@ -143,7 +144,7 @@ export default function TicketDetailModal({ ticketId, onClose, onRefresh }) {
 
     const handleAssignTechnician = async (techId) => {
         try {
-            const res = await fetch(`/api/tickets/${ticketId}/assign`, {
+            const res = await apiFetch(`/api/tickets/${ticketId}/assign`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ assignedTechnician: techId })
@@ -161,7 +162,7 @@ export default function TicketDetailModal({ ticketId, onClose, onRefresh }) {
 
     const handleStatusChange = async (newStatus) => {
         try {
-            const res = await fetch(`/api/tickets/${ticketId}/status`, {
+            const res = await apiFetch(`/api/tickets/${ticketId}/status`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: newStatus })
@@ -180,7 +181,7 @@ export default function TicketDetailModal({ ticketId, onClose, onRefresh }) {
     const handleResolveTicket = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch(`/api/tickets/${ticketId}/resolve`, {
+            const res = await apiFetch(`/api/tickets/${ticketId}/resolve`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ resolutionNote })
@@ -199,7 +200,7 @@ export default function TicketDetailModal({ ticketId, onClose, onRefresh }) {
 
     const handleReopenTicket = async () => {
         try {
-            const res = await fetch(`/api/tickets/${ticketId}/reopen`, {
+            const res = await apiFetch(`/api/tickets/${ticketId}/reopen`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ reason: "Reopened by user" })
@@ -218,7 +219,7 @@ export default function TicketDetailModal({ ticketId, onClose, onRefresh }) {
     const handleAddWorkLog = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("/api/worklogs", {
+            const res = await apiFetch("/api/worklogs", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { statusColors, priorityColors } from "../style/common";
 import { Search, Filter, Plus, Clock, AlertCircle, ArrowUpDown, Tag, Bookmark } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function TicketsView({ onSelectTicket, onOpenCreateTicket }) {
     const { user, showToast } = useAuth();
@@ -24,7 +25,7 @@ export default function TicketsView({ onSelectTicket, onOpenCreateTicket }) {
             if (search) params.append("search", search);
             if (viewTab !== "all") params.append("view", viewTab);
 
-            const res = await fetch(`/api/tickets?${params.toString()}`);
+            const res = await apiFetch(`/api/tickets?${params.toString()}`);
             const data = await res.json();
             if (data.success) {
                 setTickets(data.tickets || []);
@@ -38,7 +39,7 @@ export default function TicketsView({ onSelectTicket, onOpenCreateTicket }) {
 
     const fetchSavedFilters = async () => {
         try {
-            const res = await fetch("/api/filters");
+            const res = await apiFetch("/api/filters");
             const data = await res.json();
             if (data.success) {
                 setSavedFilters(data.filters || []);
@@ -60,7 +61,7 @@ export default function TicketsView({ onSelectTicket, onOpenCreateTicket }) {
         e.preventDefault();
         if (!newFilterName) return;
         try {
-            const res = await fetch("/api/filters", {
+            const res = await apiFetch("/api/filters", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

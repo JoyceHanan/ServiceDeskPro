@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Layers, Plus, Edit } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function CategoriesView() {
     const { user, showToast } = useAuth();
@@ -14,7 +15,7 @@ export default function CategoriesView() {
     const fetchCategories = async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/categories");
+            const res = await apiFetch("/api/categories");
             const data = await res.json();
             if (data.success) {
                 setCategories(data.categories || []);
@@ -35,7 +36,7 @@ export default function CategoriesView() {
         try {
             const url = editingCat ? `/api/categories/${editingCat._id}` : "/api/categories";
             const method = editingCat ? "PUT" : "POST";
-            const res = await fetch(url, {
+            const res = await apiFetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, description })

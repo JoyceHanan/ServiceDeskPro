@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Bell, Plus, RefreshCw, CheckCircle2, ShieldAlert } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function Header({ activeTab, onOpenCreateTicket, setActiveTab }) {
     const { user, showToast } = useAuth();
@@ -10,7 +11,7 @@ export default function Header({ activeTab, onOpenCreateTicket, setActiveTab }) 
 
     const fetchNotifications = async () => {
         try {
-            const res = await fetch("/api/notifications");
+            const res = await apiFetch("/api/notifications");
             const data = await res.json();
             if (data.success) {
                 setNotifications(data.notifications || []);
@@ -27,7 +28,7 @@ export default function Header({ activeTab, onOpenCreateTicket, setActiveTab }) 
 
     const markAllRead = async () => {
         try {
-            await fetch("/api/notifications/read-all", { method: "PATCH" });
+            await apiFetch("/api/notifications/read-all", { method: "PATCH" });
             setUnreadCount(0);
             setNotifications(prev => prev.map(n => ({ ...n, read: true })));
             showToast("Notifications marked as read", "info");
@@ -36,7 +37,7 @@ export default function Header({ activeTab, onOpenCreateTicket, setActiveTab }) 
 
     const triggerSLABreachCheck = async () => {
         try {
-            const res = await fetch("/api/sla/evaluate-breaches", { method: "POST" });
+            const res = await apiFetch("/api/sla/evaluate-breaches", { method: "POST" });
             const data = await res.json();
             if (data.success) {
                 showToast(data.message, "success");

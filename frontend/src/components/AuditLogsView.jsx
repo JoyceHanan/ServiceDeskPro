@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { ShieldAlert, RefreshCw } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function AuditLogsView() {
     const [logs, setLogs] = useState([]);
@@ -13,7 +14,7 @@ export default function AuditLogsView() {
             const params = new URLSearchParams();
             if (actionFilter) params.append("action", actionFilter);
 
-            const res = await fetch(`/api/audit?${params.toString()}`);
+            const res = await apiFetch(`/api/audit?${params.toString()}`);
             const data = await res.json();
             if (data.success) {
                 setLogs(data.logs || []);

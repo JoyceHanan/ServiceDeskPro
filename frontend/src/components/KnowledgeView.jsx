@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Search, BookOpen, Eye, Plus, Tag, User, Calendar, X } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 export default function KnowledgeView() {
     const { user, showToast } = useAuth();
@@ -24,7 +25,7 @@ export default function KnowledgeView() {
             const params = new URLSearchParams();
             if (search) params.append("search", search);
 
-            const res = await fetch(`/api/knowledge?${params.toString()}`);
+            const res = await apiFetch(`/api/knowledge?${params.toString()}`);
             const data = await res.json();
             if (data.success) {
                 setArticles(data.articles || []);
@@ -42,7 +43,7 @@ export default function KnowledgeView() {
 
     const openArticleReader = async (id) => {
         try {
-            const res = await fetch(`/api/knowledge/${id}`);
+            const res = await apiFetch(`/api/knowledge/${id}`);
             const data = await res.json();
             if (data.success && data.article) {
                 setSelectedArticle(data.article);
@@ -53,7 +54,7 @@ export default function KnowledgeView() {
     const handleCreateArticle = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch("/api/knowledge", {
+            const res = await apiFetch("/api/knowledge", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData)
